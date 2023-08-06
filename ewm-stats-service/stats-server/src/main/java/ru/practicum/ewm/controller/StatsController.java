@@ -16,7 +16,6 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@Validated
 @Slf4j
 public class StatsController {
 
@@ -38,6 +37,6 @@ public class StatsController {
                                          @RequestParam(required = false) List<String> uris,
                                          @RequestParam(defaultValue = "false") boolean unique) {
         log.info("Запрос на получение статистики");
-        return null;
+        return service.getStats(start, end, uris, unique);
     }
 }
