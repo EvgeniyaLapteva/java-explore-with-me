@@ -24,12 +24,28 @@ public class StatsServiceImpl implements StatsService {
     @Override
     public void createHit(HitForPostDto hitDto) {
         Hit hitForSave = HitMapper.toHit(hitDto);
-        Hit savedHit = repository.save(hitForSave);
+        repository.save(hitForSave);
         log.info("Информация сохранена");
     }
 
     @Override
     public List<StatsForGetDto> getStats(LocalDateTime start, LocalDateTime end, List<String> uris, boolean unique) {
-        return null;
+        if (unique) {
+            if (uris != null) {
+                log.info("Получили статистику по заданным uri и уникальным ip");
+                return repository.getAllByTimestampAndUriUnique(start,end, uris);
+            } else {
+                log.info("Получили статистику по уникальным ip");
+                return repository.getAllByTimestampUnique(start, end);
+            }
+        } else {
+            if (uris != null) {
+                log.info("Получили общую статистику по заданным uri");
+                return repository.getAllByTimestampAndUri(start, end, uris);
+            } else {
+                log.info("Получили общую статистику");
+                return repository.getAllByTimestamp(start, end);
+            }
+        }
     }
 }

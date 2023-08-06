@@ -1,10 +1,12 @@
 package ru.practicum.ewm;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
 @Data
 @Builder
+@AllArgsConstructor
 public class StatsForGetDto {
 
     private String app;
