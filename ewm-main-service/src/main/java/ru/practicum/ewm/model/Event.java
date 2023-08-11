@@ -23,6 +23,7 @@ public class Event {
 
     @OneToOne
     @JoinColumn(name = "category_id")
+    @ToString.Exclude
     private Category category;
 
     @Column(name = "confirmed_requests")
@@ -39,10 +40,12 @@ public class Event {
 
     @OneToOne
     @JoinColumn(name = "initiator_id", nullable = false)
+    @ToString.Exclude
     private User initiator;
 
     @OneToOne
     @JoinColumn(name = "location_id")
+    @ToString.Exclude
     private Location location;
 
     @Column(name = "paid", nullable = false)
