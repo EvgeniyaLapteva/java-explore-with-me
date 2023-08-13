@@ -5,38 +5,34 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.practicum.ewm.model.StateAction;
 
-import javax.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
 
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class EventShortDto {
+public class UpdateEventAdminRequest {
 
-    @NotBlank
     private String annotation;
 
-    @NotBlank
-    private CategoryDto category;
+    private Long category;
 
-    private Long confirmedRequests;
+    private String description;
 
-    @NotBlank
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime eventDate;
 
-    private Long id;
+    private LocationDto location;
 
-    @NotBlank
-    private UserShortDto initiator;
-
-    @NotBlank
     private Boolean paid;
 
-    @NotBlank
-    private String title;
+    private Long participantLimit;
 
-    private Long views;
+    private Boolean requestModeration;
+
+    private StateAction stateAction;
+
+    private String title;
 }

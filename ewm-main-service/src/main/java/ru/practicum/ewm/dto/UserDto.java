@@ -3,14 +3,18 @@ package ru.practicum.ewm.dto;
 import lombok.Builder;
 import lombok.Data;
 
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 
 @Data
 @Builder
-public class CategoryDto {
+public class UserDto {
 
     private Long id;
 
-    @NotBlank(message = "Укажите имя для категории")
+    @Email
+    private String email;
+
+    @NotBlank
     private String name;
 }

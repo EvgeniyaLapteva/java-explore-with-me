@@ -7,10 +7,10 @@ import javax.validation.constraints.NotBlank;
 
 @Data
 @Builder
-public class CategoryDto {
+public class UserShortDto {
 
     private Long id;
 
-    @NotBlank(message = "Укажите имя для категории")
+    @NotBlank
     private String name;
 }
