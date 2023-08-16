@@ -1,7 +1,8 @@
-package ru.practicum.ewm.dto;
+package ru.practicum.ewm.dto.compilations;
 
 import lombok.Builder;
 import lombok.Data;
+import ru.practicum.ewm.dto.events.EventShortDto;
 
 import javax.validation.constraints.NotBlank;
 import java.util.List;
@@ -14,9 +15,16 @@ public class CompilationDto {
 
     private Long id;
 
-    @NotBlank
+    //@NotBlank
     private Boolean pinned;
 
-    @NotBlank
+    //@NotBlank
     private String title;
+
+    public Boolean getPinned() {
+        if (pinned == null) {
+            pinned = false;
+        }
+        return pinned;
+    }
 }

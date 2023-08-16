@@ -3,13 +3,15 @@ package ru.practicum.ewm.dto;
 import lombok.Builder;
 import lombok.Data;
 
-import javax.persistence.Column;
+import javax.validation.constraints.NotBlank;
 
 @Data
 @Builder
 public class LocationDto {
 
-    private Double lat;
+    @NotBlank
+    private Float lat;
 
-    private Double lon;
+    @NotBlank
+    private Float lon;
 }

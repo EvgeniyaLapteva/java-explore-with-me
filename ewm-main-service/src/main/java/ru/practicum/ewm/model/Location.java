@@ -7,7 +7,7 @@ import lombok.ToString;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "location")
+@Table(name = "locations")
 @Getter
 @Setter
 @ToString
@@ -17,9 +17,9 @@ public class Location {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "lat")
-    private Double lat;
+    @Column(name = "lat", nullable = false)
+    private Float lat;
 
-    @Column(name = "lon")
-    private Double lon;
+    @Column(name = "lon", nullable = false)
+    private Float lon;
 }

@@ -8,10 +8,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.practicum.ewm.dto.CategoryDto;
-import ru.practicum.ewm.dto.CompilationDto;
-import ru.practicum.ewm.dto.EventFullDto;
-import ru.practicum.ewm.dto.EventShortDto;
+import ru.practicum.ewm.dto.compilations.CompilationDto;
+import ru.practicum.ewm.dto.events.EventFullDto;
+import ru.practicum.ewm.dto.events.EventShortDto;
+import ru.practicum.ewm.model.enums.EventSort;
 
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,8 +28,8 @@ public class PublicController {
 
     @GetMapping("/compilations")
     public List<CompilationDto> getCompilations(@RequestParam(required = false) Boolean pinned,
-                                                @RequestParam(defaultValue = "0") int from,
-                                                @RequestParam(defaultValue = "10") int size) {
+                                                @RequestParam(defaultValue = "0") @PositiveOrZero int from,
+                                                @RequestParam(defaultValue = "10") @Positive int size) {
         log.info("Запрос на получение списка подборок событий");
         return new ArrayList<>();
     }
@@ -38,8 +41,8 @@ public class PublicController {
     }
 
     @GetMapping("/categories")
-    public List<CategoryDto> getCategories(@RequestParam(defaultValue = "0") int from,
-                                           @RequestParam(defaultValue = "10") int size) {
+    public List<CategoryDto> getCategories(@RequestParam(defaultValue = "0") @PositiveOrZero int from,
+                                           @RequestParam(defaultValue = "10") @Positive int size) {
         log.info("Запрос на получение списка категорий");
         return new ArrayList<>();
     }
@@ -59,9 +62,9 @@ public class PublicController {
                                          @RequestParam(required = false) @DateTimeFormat(pattern = FOR_FORMATTER)
                                              LocalDateTime rangeEnd,
                                          @RequestParam(required = false) boolean onlyAvailable,
-                                         @RequestParam(required = false) String sort,
-                                         @RequestParam(defaultValue = "0") int from,
-                                         @RequestParam(defaultValue = "10") int size) {
+                                         @RequestParam(required = false) EventSort sort,
+                                         @RequestParam(defaultValue = "0") @PositiveOrZero int from,
+                                         @RequestParam(defaultValue = "10") @Positive int size) {
         log.info("Запрос на получение списка событий");
 //        это публичный эндпоинт, соответственно в выдаче должны быть только опубликованные события
 //        текстовый поиск (по аннотации и подробному описанию) должен быть без учета регистра букв

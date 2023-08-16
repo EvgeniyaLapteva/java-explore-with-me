@@ -5,6 +5,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "compilations")
@@ -17,14 +18,16 @@ public class Compilation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "event_id")
+    @ManyToMany
+    @JoinTable(name = "events_compilations",
+    joinColumns = @JoinColumn(name = "compilation_id"),
+    inverseJoinColumns = @JoinColumn(name = "event_id"))
     @ToString.Exclude
-    private Event event;
+    private List<Event> event;
 
     @Column(name = "pinned")
     private Boolean pinned;
 
-    @Column(name = "title")
+    @Column(name = "title", nullable = false)
     private String title;
 }

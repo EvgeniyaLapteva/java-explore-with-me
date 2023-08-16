@@ -1,11 +1,11 @@
-package ru.practicum.ewm.dto;
+package ru.practicum.ewm.dto.participationRequest;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.practicum.ewm.model.RequestStatus;
+import ru.practicum.ewm.model.enums.RequestStatus;
 
 import java.time.LocalDateTime;
 

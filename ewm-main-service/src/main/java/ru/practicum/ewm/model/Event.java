@@ -3,6 +3,7 @@ package ru.practicum.ewm.model;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import ru.practicum.ewm.model.enums.EventState;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -21,29 +22,29 @@ public class Event {
     @Column(name = "annotation", nullable = false)
     private String annotation;
 
-    @OneToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
     @ToString.Exclude
     private Category category;
 
-    @Column(name = "confirmed_requests")
-    private Long confirmedRequests;
+//    @Column(name = "confirmed_requests")
+//    private Long confirmedRequests;
 
-    @Column(name = "created_on")
+    @Column(name = "created_on", nullable = false)
     private LocalDateTime createdOn;
 
-    @Column(name = "description")
+    @Column(name = "description", nullable = false)
     private String description;
 
     @Column(name = "event_date", nullable = false)
     private LocalDateTime eventDate;
 
-    @OneToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "initiator_id", nullable = false)
     @ToString.Exclude
     private User initiator;
 
-    @OneToOne
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "location_id")
     @ToString.Exclude
     private Location location;
@@ -52,7 +53,7 @@ public class Event {
     private Boolean paid;
 
     @Column(name = "participant_limit")
-    private Long participantLimit;
+    private Integer participantLimit;
 
     @Column(name = "published_on")
     private LocalDateTime publishedOn;
@@ -67,6 +68,6 @@ public class Event {
     @Column(name = "title", nullable = false)
     private String title;
 
-    @Column(name = "views")
-    private Long views;
+//    @Column(name = "views")
+//    private Long views;
 }

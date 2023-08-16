@@ -3,10 +3,21 @@ package ru.practicum.ewm.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.ewm.dto.*;
+import ru.practicum.ewm.dto.compilations.CompilationDto;
+import ru.practicum.ewm.dto.compilations.NewCompilationDto;
+import ru.practicum.ewm.dto.events.EventFullDto;
+import ru.practicum.ewm.dto.events.UpdateEventAdminRequest;
+import ru.practicum.ewm.dto.users.UserDto;
+import ru.practicum.ewm.service.UserService;
+import ru.practicum.ewm.validation.Create;
+import ru.practicum.ewm.validation.Update;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +26,10 @@ import java.util.List;
 @RequiredArgsConstructor
 @Slf4j
 @RequestMapping("/admin")
+@Validated
 public class AdminController {
+
+    private final UserService userService;
 
     private static final String FOR_FORMATTER = "yyyy-MM-dd HH:mm:ss";
 
@@ -44,8 +58,8 @@ public class AdminController {
                                            LocalDateTime rangeStart,
                                            @RequestParam(required = false) @DateTimeFormat(pattern = FOR_FORMATTER)
                                            LocalDateTime rangeEnd,
-                                           @RequestParam(defaultValue = "0") int from,
-                                           @RequestParam(defaultValue = "10") int size) {
+                                           @RequestParam(defaultValue = "0") @PositiveOrZero int from,
+                                           @RequestParam(defaultValue = "10") @Positive int size) {
         log.info("Запрос на получение списка событий");
         return new ArrayList<>();
 //        Эндпоинт возвращает полную информацию обо всех событиях подходящих под переданные условия
@@ -54,32 +68,34 @@ public class AdminController {
     }
 
     @PatchMapping("/events/{eventId}")
-    public EventFullDto updateEvent(@PathVariable Long eventId, @RequestBody UpdateEventAdminRequest eventDto) {
-        log.info("Запрос на получение события по id = {}", eventId);
+    public EventFullDto updateEvent(@PathVariable Long eventId,
+                                    @Valid @RequestBody UpdateEventAdminRequest eventDto) {
+        log.info("Запрос на обновление события по id = {}", eventId);
         return null;
     }
 
     @GetMapping("/users")
-    public List<UserDto> getUsers(@RequestParam(required = false) List<Long>ids,
-                                  @RequestParam(defaultValue = "0") int from,
-                                  @RequestParam(defaultValue = "10") int size) {
+    public List<UserDto> getUsers(@RequestParam(required = false) List<Long> ids,
+                                  @RequestParam(defaultValue = "0") @PositiveOrZero int from,
+                                  @RequestParam(defaultValue = "10") @Positive int size) {
         log.info("Запрос на получение списка пользователей");
-        return new ArrayList<>();
+        return userService.getUsers(ids, from, size);
     }
 
     @PostMapping("/users")
     public UserDto createUser(@Valid @RequestBody UserDto userDto) {
         log.info("Запрос на создание пользователя");
-        return null;
+        return userService.createUser(userDto);
     }
 
     @DeleteMapping("/users/{userId}")
-    public void deleteUSerById(@PathVariable Long userId) {
+    public void deleteUserById(@PathVariable Long userId) {
         log.info("Запрос на удаление пользователя id = {}", userId);
+        userService.deleteUserById(userId);
     }
 
     @PostMapping("/compilations")
-    public CompilationDto createCompilation(@RequestBody CompilationDto compilationDto) {
+    public CompilationDto createCompilation(@Validated(Create.class) @RequestBody NewCompilationDto compilationDto) {
         log.info("Запрос на создание подборки событий");
         return null;
     }
@@ -90,7 +106,8 @@ public class AdminController {
     }
 
     @PatchMapping("/compilations/{compId}")
-    public CompilationDto updateCompilation(@PathVariable Long compId, @RequestBody CompilationDto compilationDto) {
+    public CompilationDto updateCompilation(@PathVariable Long compId,
+                                            @Validated(Update.class) @RequestBody NewCompilationDto compilationDto) {
         log.info("Запрос на обновление подборки событий id= {}", compId);
         return null;
     }

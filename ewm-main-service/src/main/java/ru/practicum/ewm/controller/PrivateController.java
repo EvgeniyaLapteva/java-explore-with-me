@@ -3,8 +3,17 @@ package ru.practicum.ewm.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.ewm.dto.*;
+import ru.practicum.ewm.dto.events.EventFullDto;
+import ru.practicum.ewm.dto.events.EventShortDto;
+import ru.practicum.ewm.dto.events.NewEventDto;
+import ru.practicum.ewm.dto.events.UpdateEventUserRequest;
+import ru.practicum.ewm.dto.participationRequest.EventRequestStatusUpdateRequest;
+import ru.practicum.ewm.dto.participationRequest.EventRequestStatusUpdateResult;
+import ru.practicum.ewm.dto.participationRequest.ParticipationRequestDto;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,14 +25,14 @@ public class PrivateController {
 
     @GetMapping("/{userId}/events")
     public List<EventShortDto> getEventsByUserId(@PathVariable Long userId,
-                                                 @RequestParam(defaultValue = "0") int from,
-                                                 @RequestParam(defaultValue = "10") int size) {
+                                                 @RequestParam(defaultValue = "0") @PositiveOrZero int from,
+                                                 @RequestParam(defaultValue = "10") @Positive int size) {
         log.info("Запрос на получение списка событий пользовтеля id = {}", userId);
         return new ArrayList<>();
     }
 
     @PostMapping("/{userId}/events")
-    public EventFullDto createEvent(@PathVariable Long userId, @RequestBody EventShortDto eventDto) {
+    public EventFullDto createEvent(@PathVariable Long userId, @RequestBody NewEventDto eventDto) {
         log.info("Запрос на создание события пользователем id = {}", userId);
         return null;
     }
@@ -37,7 +46,7 @@ public class PrivateController {
 
     @PatchMapping("/{userId}/events/{eventId}")
     public EventFullDto updateEventById(@PathVariable Long userId, @PathVariable Long eventId,
-                                        @RequestBody EventShortDto eventDto) {
+                                        @RequestBody UpdateEventUserRequest eventDto) {
         log.info("Запрос на обновление события id = {}", eventDto);
 //        изменить можно только отмененные события или события в состоянии ожидания модерации (Ожидается код ошибки 409)
 //        дата и время на которые намечено событие не может быть раньше, чем через два часа от текущего момента (Ожидается код ошибки 409)
@@ -54,7 +63,7 @@ public class PrivateController {
     @PatchMapping("/{userId}/events/{eventId}/requests")
     public EventRequestStatusUpdateResult updateRequestsStatus(@PathVariable Long userId,
                                                                @PathVariable Long eventId,
-                                                               @RequestBody EventRequestStatusUpdateRequest request) {
+                                                               @Valid @RequestBody EventRequestStatusUpdateRequest request) {
 //        если для события лимит заявок равен 0 или отключена пре-модерация заявок, то подтверждение заявок не требуется
 //        нельзя подтвердить заявку, если уже достигнут лимит по заявкам на данное событие (Ожидается код ошибки 409)
 //        статус можно изменить только у заявок, находящихся в состоянии ожидания (Ожидается код ошибки 409)

@@ -1,12 +1,14 @@
-package ru.practicum.ewm.dto;
+package ru.practicum.ewm.dto.events;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.practicum.ewm.model.EventState;
-import ru.practicum.ewm.model.Location;
+import ru.practicum.ewm.dto.CategoryDto;
+import ru.practicum.ewm.dto.LocationDto;
+import ru.practicum.ewm.dto.users.UserShortDto;
+import ru.practicum.ewm.model.enums.EventState;
 
 import javax.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
@@ -23,7 +25,7 @@ public class EventFullDto {
     @NotBlank
     private CategoryDto category;
 
-    private Long confirmedRequests;
+    private Integer confirmedRequests;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createdOn;
@@ -45,7 +47,7 @@ public class EventFullDto {
     @NotBlank
     private Boolean paid;
 
-    private Long participantLimit;
+    private Integer participantLimit;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime publishedOn;
