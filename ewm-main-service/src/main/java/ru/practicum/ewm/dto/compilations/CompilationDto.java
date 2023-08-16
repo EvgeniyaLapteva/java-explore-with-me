@@ -4,7 +4,6 @@ import lombok.Builder;
 import lombok.Data;
 import ru.practicum.ewm.dto.events.EventShortDto;
 
-import javax.validation.constraints.NotBlank;
 import java.util.List;
 
 @Data

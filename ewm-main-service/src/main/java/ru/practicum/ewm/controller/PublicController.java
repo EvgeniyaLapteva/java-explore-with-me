@@ -3,15 +3,14 @@ package ru.practicum.ewm.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
 import ru.practicum.ewm.dto.CategoryDto;
 import ru.practicum.ewm.dto.compilations.CompilationDto;
 import ru.practicum.ewm.dto.events.EventFullDto;
 import ru.practicum.ewm.dto.events.EventShortDto;
 import ru.practicum.ewm.model.enums.EventSort;
+import ru.practicum.ewm.service.CategoryService;
 
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
@@ -24,47 +23,51 @@ import java.util.List;
 @Slf4j
 public class PublicController {
 
+    private final CategoryService categoryService;
+
     private static final String FOR_FORMATTER = "yyyy-MM-dd HH:mm:ss";
 
     @GetMapping("/compilations")
     public List<CompilationDto> getCompilations(@RequestParam(required = false) Boolean pinned,
-                                                @RequestParam(defaultValue = "0") @PositiveOrZero int from,
-                                                @RequestParam(defaultValue = "10") @Positive int size) {
+                                                @RequestParam(defaultValue = "0") @PositiveOrZero Integer from,
+                                                @RequestParam(defaultValue = "10") @Positive Integer size) {
         log.info("Запрос на получение списка подборок событий");
         return new ArrayList<>();
     }
 
     @GetMapping("/compilations/{compId}")
-    public CompilationDto getCompilationById(@PathVariable long compId) {
+    public CompilationDto getCompilationById(@PathVariable Long compId) {
         log.info("Запрос на получения подборки событий по id = {}", compId);
         return null;
     }
 
     @GetMapping("/categories")
-    public List<CategoryDto> getCategories(@RequestParam(defaultValue = "0") @PositiveOrZero int from,
-                                           @RequestParam(defaultValue = "10") @Positive int size) {
+    @ResponseStatus(HttpStatus.OK)
+    public List<CategoryDto> getCategories(@RequestParam(defaultValue = "0") @PositiveOrZero Integer from,
+                                           @RequestParam(defaultValue = "10") @Positive Integer size) {
         log.info("Запрос на получение списка категорий");
-        return new ArrayList<>();
+        return categoryService.getCategories(from, size);
     }
 
     @GetMapping("/categories/{catId}")
-    public CategoryDto getCategoryById(@PathVariable long catId) {
+    @ResponseStatus(HttpStatus.OK)
+    public CategoryDto getCategoryById(@PathVariable Long catId) {
         log.info("Запрос на получение категории по id = {}", catId);
-        return null;
+        return categoryService.getCategoryById(catId);
     }
 
     @GetMapping("/events")
     public List<EventShortDto> getEvents(@RequestParam(required = false) String text,
                                          @RequestParam(required = false) List<Long> categories,
-                                         @RequestParam(required = false) boolean paid,
+                                         @RequestParam(required = false) Boolean paid,
                                          @RequestParam(required = false) @DateTimeFormat(pattern = FOR_FORMATTER)
                                              LocalDateTime rangeStart,
                                          @RequestParam(required = false) @DateTimeFormat(pattern = FOR_FORMATTER)
                                              LocalDateTime rangeEnd,
-                                         @RequestParam(required = false) boolean onlyAvailable,
+                                         @RequestParam(required = false) Boolean onlyAvailable,
                                          @RequestParam(required = false) EventSort sort,
-                                         @RequestParam(defaultValue = "0") @PositiveOrZero int from,
-                                         @RequestParam(defaultValue = "10") @Positive int size) {
+                                         @RequestParam(defaultValue = "0") @PositiveOrZero Integer from,
+                                         @RequestParam(defaultValue = "10") @Positive Integer size) {
         log.info("Запрос на получение списка событий");
 //        это публичный эндпоинт, соответственно в выдаче должны быть только опубликованные события
 //        текстовый поиск (по аннотации и подробному описанию) должен быть без учета регистра букв
@@ -75,7 +78,7 @@ public class PublicController {
     }
 
     @GetMapping("events/{id}")
-    public EventFullDto getEventById(@PathVariable long id) {
+    public EventFullDto getEventById(@PathVariable Long id) {
 
         log.info("Запрос на получение события по id = {}", id);
 //        событие должно быть опубликовано
