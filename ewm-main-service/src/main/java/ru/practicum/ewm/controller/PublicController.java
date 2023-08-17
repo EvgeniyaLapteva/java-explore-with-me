@@ -12,6 +12,7 @@ import ru.practicum.ewm.dto.events.EventShortDto;
 import ru.practicum.ewm.model.enums.EventSort;
 import ru.practicum.ewm.service.CategoryService;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 import java.time.LocalDateTime;
@@ -57,7 +58,7 @@ public class PublicController {
     }
 
     @GetMapping("/events")
-    public List<EventShortDto> getEvents(@RequestParam(required = false) String text,
+    public List<EventShortDto> getEventsPublic(@RequestParam(required = false) String text,
                                          @RequestParam(required = false) List<Long> categories,
                                          @RequestParam(required = false) Boolean paid,
                                          @RequestParam(required = false) @DateTimeFormat(pattern = FOR_FORMATTER)
@@ -67,8 +68,11 @@ public class PublicController {
                                          @RequestParam(required = false) Boolean onlyAvailable,
                                          @RequestParam(required = false) EventSort sort,
                                          @RequestParam(defaultValue = "0") @PositiveOrZero Integer from,
-                                         @RequestParam(defaultValue = "10") @Positive Integer size) {
-        log.info("Запрос на получение списка событий");
+                                         @RequestParam(defaultValue = "10") @Positive Integer size,
+                                               HttpServletRequest request) {
+        String uri = request.getRequestURI();
+        String ip = request.getRemoteAddr();
+        log.info("Публичный запрос на получение списка событий");
 //        это публичный эндпоинт, соответственно в выдаче должны быть только опубликованные события
 //        текстовый поиск (по аннотации и подробному описанию) должен быть без учета регистра букв
 //        если в запросе не указан диапазон дат [rangeStart-rangeEnd], то нужно выгружать события, которые произойдут позже текущей даты и времени
@@ -78,9 +82,10 @@ public class PublicController {
     }
 
     @GetMapping("events/{id}")
-    public EventFullDto getEventById(@PathVariable Long id) {
-
-        log.info("Запрос на получение события по id = {}", id);
+    public EventFullDto getEventByIdPublic(@PathVariable Long id, HttpServletRequest request) {
+        String uri = request.getRequestURI();
+        String ip = request.getRemoteAddr();
+        log.info("Публичный запрос на получение события по id = {}", id);
 //        событие должно быть опубликовано
 //        информация о событии должна включать в себя количество просмотров и количество подтвержденных запросов
 //        информацию о том, что по этому эндпоинту был осуществлен и обработан запрос, нужно сохранить в сервисе статистики

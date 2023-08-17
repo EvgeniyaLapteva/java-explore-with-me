@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
 import ru.practicum.ewm.dto.LocationDto;
 
+import javax.validation.constraints.FutureOrPresent;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
@@ -32,6 +33,7 @@ public class NewEventDto {
     @NotBlank
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     //не раньше, чем через два часа от текущего времени
+    @FutureOrPresent(message = "должно содержать дату, которая еще не наступила")
     private LocalDateTime eventDate;
 
     @NotBlank
