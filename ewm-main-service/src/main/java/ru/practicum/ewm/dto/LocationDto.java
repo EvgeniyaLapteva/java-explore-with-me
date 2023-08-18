@@ -9,9 +9,7 @@ import javax.validation.constraints.NotBlank;
 @Builder
 public class LocationDto {
 
-    @NotBlank
     private Float lat;
 
-    @NotBlank
     private Float lon;
 }

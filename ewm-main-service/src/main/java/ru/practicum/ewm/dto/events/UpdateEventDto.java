@@ -9,6 +9,7 @@ import org.hibernate.validator.constraints.Length;
 import ru.practicum.ewm.dto.LocationDto;
 import ru.practicum.ewm.model.enums.StateAction;
 
+import javax.validation.constraints.Future;
 import java.time.LocalDateTime;
 
 @Data
@@ -26,6 +27,7 @@ public class UpdateEventDto {
     private String description;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @Future
     private LocalDateTime eventDate;
 
     private LocationDto location;

@@ -17,27 +17,27 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class EventShortDto {
 
-    @NotBlank
+//    @NotBlank
     private String annotation;
 
-    @NotBlank
+//    @NotBlank
     private CategoryDto category;
 
     private Long confirmedRequests;
 
-    @NotBlank
+//    @NotBlank
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime eventDate;
 
     private Long id;
 
-    @NotBlank
+//    @NotBlank
     private UserShortDto initiator;
 
-    @NotBlank
+//    @NotBlank
     private Boolean paid;
 
-    @NotBlank
+//    @NotBlank
     private String title;
 
     private Long views;

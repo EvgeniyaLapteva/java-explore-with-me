@@ -30,16 +30,17 @@ public class NewEventDto {
     @Length(min = 20, max = 7000)
     private String description;
 
-    @NotBlank
+    @NotNull
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     //не раньше, чем через два часа от текущего времени
     @FutureOrPresent(message = "должно содержать дату, которая еще не наступила")
     private LocalDateTime eventDate;
 
-    @NotBlank
+    @NotNull
     private LocationDto location;
 
-    private Boolean paid;
+    @Builder.Default
+    private Boolean paid = false;
 
     private Integer participantLimit;
 

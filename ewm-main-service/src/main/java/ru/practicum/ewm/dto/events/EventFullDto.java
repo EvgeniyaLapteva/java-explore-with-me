@@ -19,10 +19,10 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class EventFullDto {
 
-    @NotBlank
+//    @NotBlank
     private String annotation;
 
-    @NotBlank
+//    @NotBlank
     private CategoryDto category;
 
     private Long confirmedRequests;
@@ -33,18 +33,18 @@ public class EventFullDto {
     private String description;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @NotBlank
+//    @NotBlank
     private LocalDateTime eventDate;
 
     private Long id;
 
-    @NotBlank
+//    @NotBlank
     private UserShortDto initiator;
 
-    @NotBlank
+//    @NotBlank
     private LocationDto location;
 
-    @NotBlank
+//    @NotBlank
     private Boolean paid;
 
     private Integer participantLimit;
@@ -56,7 +56,7 @@ public class EventFullDto {
 
     private EventState state;
 
-    @NotBlank
+//    @NotBlank
     private String title;
 
     private Long views;
