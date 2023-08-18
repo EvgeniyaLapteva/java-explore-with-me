@@ -14,6 +14,7 @@ import ru.practicum.ewm.dto.events.UpdateEventDto;
 import ru.practicum.ewm.dto.users.UserDto;
 import ru.practicum.ewm.model.enums.EventState;
 import ru.practicum.ewm.service.CategoryService;
+import ru.practicum.ewm.service.EventService;
 import ru.practicum.ewm.service.UserService;
 import ru.practicum.ewm.validation.Create;
 import ru.practicum.ewm.validation.Update;
@@ -22,7 +23,6 @@ import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -35,6 +35,8 @@ public class AdminController {
     private final UserService userService;
 
     private final CategoryService categoryService;
+
+    private final EventService eventService;
 
     private static final String FOR_FORMATTER = "yyyy-MM-dd HH:mm:ss";
 
@@ -60,6 +62,7 @@ public class AdminController {
     }
 
     @GetMapping("/events")
+    @ResponseStatus(HttpStatus.OK)
     public List<EventFullDto> getAllEventsByAdmin(@RequestParam(required = false) List<Long> users,
                                                   @RequestParam(required = false) List<EventState> states,
                                                   @RequestParam(required = false) List<Long> categories,
@@ -70,17 +73,15 @@ public class AdminController {
                                                   @RequestParam(defaultValue = "0") @PositiveOrZero Integer from,
                                                   @RequestParam(defaultValue = "10") @Positive Integer size) {
         log.info("Запрос от администратора на получение списка событий");
-        return new ArrayList<>();
-//        Эндпоинт возвращает полную информацию обо всех событиях подходящих под переданные условия
-//
-//        В случае, если по заданным фильтрам не найдено ни одного события, возвращает пустой список
+        return eventService.getAllEventsByAdmin(users, states, categories, rangeStart, rangeEnd, from, size);
     }
 
     @PatchMapping("/events/{eventId}")
+    @ResponseStatus(HttpStatus.OK)
     public EventFullDto updateEventByAdmin(@PathVariable Long eventId,
                                            @Valid @RequestBody UpdateEventDto eventDto) {
         log.info("Запрос от администратора на обновление события по id = {}", eventId);
-        return null;
+        return eventService.updateEventByAdmin(eventId, eventDto);
     }
 
     @GetMapping("/users")

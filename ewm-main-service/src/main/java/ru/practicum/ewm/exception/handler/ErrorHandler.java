@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import ru.practicum.ewm.exception.model.ConditionsAreNotMetException;
+import ru.practicum.ewm.exception.model.IncorrectRequestException;
 import ru.practicum.ewm.exception.model.ObjectNotFoundException;
 import ru.practicum.ewm.exception.response.ApiError;
 
@@ -71,6 +72,14 @@ public class ErrorHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ApiError handleMethodArgumentTypeMismatchException(final MethodArgumentTypeMismatchException e) {
+        log.info(e.getMessage());
+        return new ApiError("BAD_REQUEST", "Incorrectly made request.", e.getMessage(),
+                LocalDateTime.now().format(formatter));
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ApiError handleIncorrectRequestException(final IncorrectRequestException e) {
         log.info(e.getMessage());
         return new ApiError("BAD_REQUEST", "Incorrectly made request.", e.getMessage(),
                 LocalDateTime.now().format(formatter));

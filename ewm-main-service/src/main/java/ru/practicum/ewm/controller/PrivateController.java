@@ -55,8 +55,6 @@ public class PrivateController {
     public EventFullDto updateEventByIdByUser(@PathVariable Long userId, @PathVariable Long eventId,
                                               @Valid @RequestBody UpdateEventDto eventDto) {
         log.info("Запрос на изменение события id = {}, добавленного текущим пользователем id = {}", eventId, userId);
-//        изменить можно только отмененные события или события в состоянии ожидания модерации (Ожидается код ошибки 409)
-//        дата и время на которые намечено событие не может быть раньше, чем через два часа от текущего момента (Ожидается код ошибки 409)
         return eventService.updateEventByIdByUser(userId, eventId, eventDto);
     }
 

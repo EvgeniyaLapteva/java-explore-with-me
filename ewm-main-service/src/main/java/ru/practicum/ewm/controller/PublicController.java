@@ -9,8 +9,8 @@ import ru.practicum.ewm.dto.CategoryDto;
 import ru.practicum.ewm.dto.compilations.CompilationDto;
 import ru.practicum.ewm.dto.events.EventFullDto;
 import ru.practicum.ewm.dto.events.EventShortDto;
-import ru.practicum.ewm.model.enums.EventSort;
 import ru.practicum.ewm.service.CategoryService;
+import ru.practicum.ewm.service.EventService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.Positive;
@@ -25,6 +25,8 @@ import java.util.List;
 public class PublicController {
 
     private final CategoryService categoryService;
+
+    private final EventService eventService;
 
     private static final String FOR_FORMATTER = "yyyy-MM-dd HH:mm:ss";
 
@@ -58,6 +60,7 @@ public class PublicController {
     }
 
     @GetMapping("/events")
+    @ResponseStatus(HttpStatus.OK)
     public List<EventShortDto> getEventsPublic(@RequestParam(required = false) String text,
                                          @RequestParam(required = false) List<Long> categories,
                                          @RequestParam(required = false) Boolean paid,
@@ -65,31 +68,20 @@ public class PublicController {
                                              LocalDateTime rangeStart,
                                          @RequestParam(required = false) @DateTimeFormat(pattern = FOR_FORMATTER)
                                              LocalDateTime rangeEnd,
-                                         @RequestParam(required = false) Boolean onlyAvailable,
-                                         @RequestParam(required = false) EventSort sort,
+                                         @RequestParam(required = false, defaultValue = "false") Boolean onlyAvailable,
+                                         @RequestParam(required = false) String sort,
                                          @RequestParam(defaultValue = "0") @PositiveOrZero Integer from,
                                          @RequestParam(defaultValue = "10") @Positive Integer size,
                                                HttpServletRequest request) {
-        String uri = request.getRequestURI();
-        String ip = request.getRemoteAddr();
         log.info("Публичный запрос на получение списка событий");
-//        это публичный эндпоинт, соответственно в выдаче должны быть только опубликованные события
-//        текстовый поиск (по аннотации и подробному описанию) должен быть без учета регистра букв
-//        если в запросе не указан диапазон дат [rangeStart-rangeEnd], то нужно выгружать события, которые произойдут позже текущей даты и времени
-//        информация о каждом событии должна включать в себя количество просмотров и количество уже одобренных заявок на участие
-//        информацию о том, что по этому эндпоинту был осуществлен и обработан запрос, нужно сохранить в сервисе статистики
-        return new ArrayList<>();
+        return eventService.getEventsPublic(text, categories, paid, rangeStart, rangeEnd, onlyAvailable, sort, from,
+                size, request);
     }
 
     @GetMapping("events/{id}")
-    public EventFullDto getEventByIdPublic(@PathVariable Long id, HttpServletRequest request) {
-        String uri = request.getRequestURI();
-        String ip = request.getRemoteAddr();
+    @ResponseStatus(HttpStatus.OK)
+    public EventFullDto getEventByIdPublic(@Positive @PathVariable Long id, HttpServletRequest request) {
         log.info("Публичный запрос на получение события по id = {}", id);
-//        событие должно быть опубликовано
-//        информация о событии должна включать в себя количество просмотров и количество подтвержденных запросов
-//        информацию о том, что по этому эндпоинту был осуществлен и обработан запрос, нужно сохранить в сервисе статистики
-//        В случае, если события с заданным id не найдено, возвращает статус код 404
-        return null;
+        return eventService.getEventByIdPublic(id, request);
     }
 }
