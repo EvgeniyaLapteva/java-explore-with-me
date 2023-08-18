@@ -1,6 +1,9 @@
 package ru.practicum.ewm.service;
 
 import ru.practicum.ewm.dto.events.*;
+import ru.practicum.ewm.dto.participationRequest.EventRequestStatusUpdateRequest;
+import ru.practicum.ewm.dto.participationRequest.EventRequestStatusUpdateResult;
+import ru.practicum.ewm.dto.participationRequest.ParticipationRequestDto;
 import ru.practicum.ewm.model.enums.EventState;
 
 import javax.servlet.http.HttpServletRequest;
@@ -28,4 +31,9 @@ public interface EventService {
                                         HttpServletRequest request);
 
     EventFullDto getEventByIdPublic(Long id, HttpServletRequest request);
+
+    List<ParticipationRequestDto> getRequestsByUserIdAndEventId(Long userId, Long eventId);
+
+    EventRequestStatusUpdateResult updateRequestsStatusByUserId(Long userId, Long eventId,
+                                                                EventRequestStatusUpdateRequest request);
 }

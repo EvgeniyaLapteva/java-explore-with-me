@@ -12,16 +12,18 @@ import ru.practicum.ewm.HitForPostDto;
 import ru.practicum.ewm.StatsForGetDto;
 import ru.practicum.ewm.client.StatsClient;
 import ru.practicum.ewm.dto.events.*;
+import ru.practicum.ewm.dto.participationRequest.EventRequestStatusUpdateRequest;
+import ru.practicum.ewm.dto.participationRequest.EventRequestStatusUpdateResult;
+import ru.practicum.ewm.dto.participationRequest.ParticipationRequestDto;
 import ru.practicum.ewm.exception.model.ConditionsAreNotMetException;
 import ru.practicum.ewm.exception.model.IncorrectRequestException;
 import ru.practicum.ewm.exception.model.ObjectNotFoundException;
 import ru.practicum.ewm.mapper.EventMapper;
 import ru.practicum.ewm.mapper.LocationMapper;
-import ru.practicum.ewm.model.Category;
-import ru.practicum.ewm.model.Event;
-import ru.practicum.ewm.model.Location;
-import ru.practicum.ewm.model.User;
+import ru.practicum.ewm.mapper.ParticipationRequestMapper;
+import ru.practicum.ewm.model.*;
 import ru.practicum.ewm.model.enums.EventState;
+import ru.practicum.ewm.model.enums.RequestStatus;
 import ru.practicum.ewm.model.enums.StateAction;
 import ru.practicum.ewm.repository.*;
 
@@ -187,6 +189,65 @@ public class EventServiceImpl implements EventService {
         repository.save(event);
         log.info("Получили событие по id = {} в ответ на публичный запрос", id);
         return EventMapper.toEventFullDto(event);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<ParticipationRequestDto> getRequestsByUserIdAndEventId(Long userId, Long eventId) {
+        Event event = getEvent(eventId);
+        validateInitiator(userId, event.getInitiator().getId());
+        List<ParticipationRequest> requests = requestRepository.findByEventId(eventId);
+        log.info("Получен список заявок на участие в событии id = {}", eventId);
+        return requests.stream()
+                .map(ParticipationRequestMapper::toRequestDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public EventRequestStatusUpdateResult updateRequestsStatusByUserId(Long userId, Long eventId,
+                                                                       EventRequestStatusUpdateRequest request) {
+        User user = getUser(userId);
+        Event event = getEvent(eventId);
+        EventRequestStatusUpdateResult result = EventRequestStatusUpdateResult.builder()
+                .confirmedRequests(Collections.emptyList())
+                .rejectedRequests(Collections.emptyList())
+                .build();
+        if (!user.getId().equals(event.getInitiator().getId())) {
+            throw new ConditionsAreNotMetException("The user id = " + userId + " is not the initiator of event id = " +
+                    eventId);
+        }
+        if (event.getParticipantLimit() == 0 || !event.getRequestModeration()) {
+            return  result;
+        }
+        if (event.getConfirmedRequests() >= event.getParticipantLimit()) {
+            throw new ConditionsAreNotMetException("Exceeded the limit of participants");
+        }
+        List<ParticipationRequest> confirmedRequests = new ArrayList<>();
+        List<ParticipationRequest> rejectedRequests = new ArrayList<>();
+        long freePlace = event.getParticipantLimit() - event.getConfirmedRequests();
+        List<ParticipationRequest> requests = requestRepository.findAllById(request.getRequestIds());
+        for (ParticipationRequest participationRequest : requests) {
+            if (!participationRequest.getStatus().equals(RequestStatus.PENDING)) {
+                throw new ConditionsAreNotMetException("Requests status has to be PENDING");
+            }
+            if (request.getStatus().equals(RequestStatus.CONFIRMED) && freePlace > 0) {
+                participationRequest.setStatus(RequestStatus.CONFIRMED);
+                event.setConfirmedRequests(event.getConfirmedRequests() + 1L);
+                confirmedRequests.add(participationRequest);
+                freePlace--;
+            } else {
+                participationRequest.setStatus(RequestStatus.REJECTED);
+                rejectedRequests.add(participationRequest);
+            }
+        }
+        result.setConfirmedRequests(confirmedRequests.stream()
+                .map(ParticipationRequestMapper::toRequestDto).collect(Collectors.toList()));
+        result.setRejectedRequests(rejectedRequests.stream()
+                .map(ParticipationRequestMapper::toRequestDto).collect(Collectors.toList()));
+        repository.save(event);
+        requestRepository.saveAll(requests);
+        log.info("Обновили статусы заявок на участии в событии id = {} пользователя id = {}", eventId, userId);
+        return result;
     }
 
     private User getUser(Long userId) {

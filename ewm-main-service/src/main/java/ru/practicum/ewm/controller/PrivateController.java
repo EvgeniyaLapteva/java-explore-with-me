@@ -11,11 +11,11 @@ import ru.practicum.ewm.dto.participationRequest.EventRequestStatusUpdateRequest
 import ru.practicum.ewm.dto.participationRequest.EventRequestStatusUpdateResult;
 import ru.practicum.ewm.dto.participationRequest.ParticipationRequestDto;
 import ru.practicum.ewm.service.EventService;
+import ru.practicum.ewm.service.ParticipationRequestService;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -25,6 +25,8 @@ import java.util.List;
 public class PrivateController {
 
     private final EventService eventService;
+
+    private final ParticipationRequestService requestService;
 
     @GetMapping("/{userId}/events")
     @ResponseStatus(HttpStatus.OK)
@@ -59,42 +61,43 @@ public class PrivateController {
     }
 
     @GetMapping("/{userId}/events/{eventId}/requests")
+    @ResponseStatus(HttpStatus.OK)
     public List<ParticipationRequestDto> getRequestsByUserIdAndEventId(@PathVariable Long userId,
                                                                        @PathVariable Long eventId) {
         log.info("Запрос на получение списка заявок на участие в событии id = {} пользователя id = {}", eventId, userId);
-        return  new ArrayList<>();
+        return eventService.getRequestsByUserIdAndEventId(userId, eventId);
     }
 
     @PatchMapping("/{userId}/events/{eventId}/requests")
-    public EventRequestStatusUpdateResult updateRequestsStatus(@PathVariable Long userId,
+    @ResponseStatus(HttpStatus.OK)
+    public EventRequestStatusUpdateResult updateRequestsStatusByUserId(@PathVariable Long userId,
                                                                @PathVariable Long eventId,
                                                                @Valid @RequestBody EventRequestStatusUpdateRequest request) {
-//        если для события лимит заявок равен 0 или отключена пре-модерация заявок, то подтверждение заявок не требуется
-//        нельзя подтвердить заявку, если уже достигнут лимит по заявкам на данное событие (Ожидается код ошибки 409)
-//        статус можно изменить только у заявок, находящихся в состоянии ожидания (Ожидается код ошибки 409)
-//        если при подтверждении данной заявки, лимит заявок для события исчерпан, то все неподтверждённые заявки необходимо отклонить
         log.info("Запрос на обновление статусов заявок на участии в событии id = {} пользователя id = {}", eventId,
                 userId);
-        return null;
+        return eventService.updateRequestsStatusByUserId(userId, eventId, request);
     }
 
     @GetMapping("/{userId}/requests")
+    @ResponseStatus(HttpStatus.OK)
     public List<ParticipationRequestDto> getRequestsByUserId(@PathVariable Long userId) {
-        log.info("Запрос на получение списка заявок на участие пользователя id = {} на участие в чужих событиях", userId);
-        return new ArrayList<>();
+        log.info("Запрос на получение списка заявок на участие пользователя id = {} в чужих событиях", userId);
+        return requestService.getRequestsByUserId(userId);
     }
 
     @PostMapping("/{userId}/requests")
+    @ResponseStatus(HttpStatus.CREATED)
     public ParticipationRequestDto createParticipationRequest(@PathVariable Long userId,
                                                               @RequestParam Long eventId) {
         log.info("Запрос на создание заявки на участие в событии id = {} пользователем id = {}", eventId, userId);
-        return null;
+        return requestService.createParticipationRequest(userId, eventId);
     }
 
     @PatchMapping("/{userId}/requests/{requestId}/cancel")
-    public ParticipationRequestDto updateParticipationRequestStatus(@PathVariable Long userId,
+    @ResponseStatus(HttpStatus.OK)
+    public ParticipationRequestDto cancelParticipationRequestStatus(@PathVariable Long userId,
                                                                     @PathVariable Long requestId) {
         log.info("Запрос от пользователя id = {} на отмену участия в событии", userId);
-        return null;
+        return requestService.cancelParticipationRequestStatus(userId, requestId);
     }
 }
