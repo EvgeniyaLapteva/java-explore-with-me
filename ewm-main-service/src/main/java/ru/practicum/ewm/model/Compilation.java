@@ -5,6 +5,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -23,7 +24,7 @@ public class Compilation {
     joinColumns = @JoinColumn(name = "compilation_id"),
     inverseJoinColumns = @JoinColumn(name = "event_id"))
     @ToString.Exclude
-    private List<Event> event;
+    private List<Event> events = new ArrayList<>();
 
     @Column(name = "pinned")
     private Boolean pinned;

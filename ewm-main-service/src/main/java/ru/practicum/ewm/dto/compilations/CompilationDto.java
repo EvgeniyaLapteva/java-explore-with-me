@@ -14,10 +14,8 @@ public class CompilationDto {
 
     private Long id;
 
-    //@NotBlank
     private Boolean pinned;
 
-    //@NotBlank
     private String title;
 
     public Boolean getPinned() {

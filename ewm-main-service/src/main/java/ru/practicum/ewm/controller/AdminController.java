@@ -14,6 +14,7 @@ import ru.practicum.ewm.dto.events.UpdateEventDto;
 import ru.practicum.ewm.dto.users.UserDto;
 import ru.practicum.ewm.model.enums.EventState;
 import ru.practicum.ewm.service.CategoryService;
+import ru.practicum.ewm.service.CompilationService;
 import ru.practicum.ewm.service.EventService;
 import ru.practicum.ewm.service.UserService;
 import ru.practicum.ewm.validation.Create;
@@ -37,6 +38,8 @@ public class AdminController {
     private final CategoryService categoryService;
 
     private final EventService eventService;
+
+    private final CompilationService compilationService;
 
     private static final String FOR_FORMATTER = "yyyy-MM-dd HH:mm:ss";
 
@@ -108,20 +111,24 @@ public class AdminController {
     }
 
     @PostMapping("/compilations")
+    @ResponseStatus(HttpStatus.CREATED)
     public CompilationDto createCompilation(@Validated(Create.class) @RequestBody NewCompilationDto compilationDto) {
         log.info("Запрос на создание подборки событий");
-        return null;
+        return compilationService.createCompilation(compilationDto);
     }
 
     @DeleteMapping("/compilations/{compId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteCompilation(@PathVariable Long compId) {
         log.info("Запрос на удаление подборки событий id = {}", compId);
+        compilationService.deleteCompilation(compId);
     }
 
     @PatchMapping("/compilations/{compId}")
+    @ResponseStatus(HttpStatus.OK)
     public CompilationDto updateCompilation(@PathVariable Long compId,
                                             @Validated(Update.class) @RequestBody NewCompilationDto compilationDto) {
         log.info("Запрос на обновление подборки событий id= {}", compId);
-        return null;
+        return compilationService.updateCompilation(compId, compilationDto);
     }
 }

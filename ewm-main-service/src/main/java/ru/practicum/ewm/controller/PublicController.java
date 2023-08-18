@@ -10,6 +10,7 @@ import ru.practicum.ewm.dto.compilations.CompilationDto;
 import ru.practicum.ewm.dto.events.EventFullDto;
 import ru.practicum.ewm.dto.events.EventShortDto;
 import ru.practicum.ewm.service.CategoryService;
+import ru.practicum.ewm.service.CompilationService;
 import ru.practicum.ewm.service.EventService;
 
 import javax.servlet.http.HttpServletRequest;
@@ -28,20 +29,24 @@ public class PublicController {
 
     private final EventService eventService;
 
+    private final CompilationService compilationService;
+
     private static final String FOR_FORMATTER = "yyyy-MM-dd HH:mm:ss";
 
     @GetMapping("/compilations")
-    public List<CompilationDto> getCompilations(@RequestParam(required = false) Boolean pinned,
+    @ResponseStatus(HttpStatus.OK)
+    public List<CompilationDto> getCompilations(@RequestParam(defaultValue = "false") Boolean pinned,
                                                 @RequestParam(defaultValue = "0") @PositiveOrZero Integer from,
                                                 @RequestParam(defaultValue = "10") @Positive Integer size) {
         log.info("Запрос на получение списка подборок событий");
-        return new ArrayList<>();
+        return compilationService.getCompilations(pinned, from, size);
     }
 
     @GetMapping("/compilations/{compId}")
+    @ResponseStatus(HttpStatus.OK)
     public CompilationDto getCompilationById(@PathVariable Long compId) {
         log.info("Запрос на получения подборки событий по id = {}", compId);
-        return null;
+        return compilationService.getCompilationById(compId);
     }
 
     @GetMapping("/categories")

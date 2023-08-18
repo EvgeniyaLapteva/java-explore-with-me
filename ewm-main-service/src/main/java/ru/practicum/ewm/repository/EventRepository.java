@@ -45,4 +45,6 @@ public interface EventRepository extends JpaRepository<Event, Long> {
                                 @Param("rangeEnd") LocalDateTime rangeEnd,
                                 @Param("onlyAvailable") Boolean onlyAvailable, @Param("sort") String sort,
                                 PageRequest page);
+
+    List<Event> findByIdIn(List<Long> ids);
 }
