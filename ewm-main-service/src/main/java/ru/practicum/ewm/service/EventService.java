@@ -15,12 +15,12 @@ public interface EventService {
 
     EventFullDto getEventByIdByUser(Long userId, Long eventId);
 
-    EventFullDto updateEventByIdByUser(Long userId, Long eventId, UpdateEventUserRequest eventDto);
+    EventFullDto updateEventByIdByUser(Long userId, Long eventId, UpdateEventDto eventDto);
 
     List<EventFullDto> getAllEventsByAdmin(List<Long> users, List<EventState> states, List<Long> categories,
                                            LocalDateTime rangeStart, LocalDateTime rangeEnd, Integer from, Integer size);
 
-    EventFullDto updateEventByAdmin(Long eventId, UpdateEventAdminRequest eventDto);
+    EventFullDto updateEventByAdmin(Long eventId, UpdateEventDto eventDto);
 
     List<EventShortDto> getEventsPublic(String text, List<Long> categories, Boolean paid,
                                                LocalDateTime rangeStart, LocalDateTime rangeEnd,

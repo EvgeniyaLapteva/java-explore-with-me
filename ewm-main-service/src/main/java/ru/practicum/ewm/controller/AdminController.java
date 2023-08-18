@@ -10,7 +10,7 @@ import ru.practicum.ewm.dto.*;
 import ru.practicum.ewm.dto.compilations.CompilationDto;
 import ru.practicum.ewm.dto.compilations.NewCompilationDto;
 import ru.practicum.ewm.dto.events.EventFullDto;
-import ru.practicum.ewm.dto.events.UpdateEventAdminRequest;
+import ru.practicum.ewm.dto.events.UpdateEventDto;
 import ru.practicum.ewm.dto.users.UserDto;
 import ru.practicum.ewm.model.enums.EventState;
 import ru.practicum.ewm.service.CategoryService;
@@ -78,7 +78,7 @@ public class AdminController {
 
     @PatchMapping("/events/{eventId}")
     public EventFullDto updateEventByAdmin(@PathVariable Long eventId,
-                                           @Valid @RequestBody UpdateEventAdminRequest eventDto) {
+                                           @Valid @RequestBody UpdateEventDto eventDto) {
         log.info("Запрос от администратора на обновление события по id = {}", eventId);
         return null;
     }

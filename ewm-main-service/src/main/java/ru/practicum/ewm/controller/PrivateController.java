@@ -5,9 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.ewm.dto.events.EventFullDto;
-import ru.practicum.ewm.dto.events.EventShortDto;
 import ru.practicum.ewm.dto.events.NewEventDto;
-import ru.practicum.ewm.dto.events.UpdateEventUserRequest;
+import ru.practicum.ewm.dto.events.UpdateEventDto;
 import ru.practicum.ewm.dto.participationRequest.EventRequestStatusUpdateRequest;
 import ru.practicum.ewm.dto.participationRequest.EventRequestStatusUpdateResult;
 import ru.practicum.ewm.dto.participationRequest.ParticipationRequestDto;
@@ -28,11 +27,12 @@ public class PrivateController {
     private final EventService eventService;
 
     @GetMapping("/{userId}/events")
+    @ResponseStatus(HttpStatus.OK)
     public List<EventFullDto> getEventsByUserId(@PathVariable Long userId,
                                                  @RequestParam(defaultValue = "0") @PositiveOrZero Integer from,
                                                  @RequestParam(defaultValue = "10") @Positive Integer size) {
         log.info("Запрос на получение списка событий пользовтеля id = {}", userId);
-        return new ArrayList<>();
+        return eventService.getEventsByUserId(userId, from, size);
     }
 
     @PostMapping("/{userId}/events")
@@ -43,19 +43,21 @@ public class PrivateController {
     }
 
     @GetMapping("/{userId}/events/{eventId}")
+    @ResponseStatus(HttpStatus.OK)
     public EventFullDto getEventByIdByUser(@PathVariable Long userId, @PathVariable Long eventId) {
-        //        Получение полной информации о событии добавленном текущим пользователем
-        log.info("Запрос на получение информации о событии по id = {}", eventId);
-        return null;
+        log.info("Запрос на получение полной информации о событии по id = {} добавленном текущим пользователем id = {}",
+                eventId, userId);
+        return eventService.getEventByIdByUser(userId, eventId);
     }
 
     @PatchMapping("/{userId}/events/{eventId}")
+    @ResponseStatus(HttpStatus.OK)
     public EventFullDto updateEventByIdByUser(@PathVariable Long userId, @PathVariable Long eventId,
-                                              @Valid @RequestBody UpdateEventUserRequest eventDto) {
-        log.info("Запрос от пользователя на обновление события id = {}", eventDto);
+                                              @Valid @RequestBody UpdateEventDto eventDto) {
+        log.info("Запрос на изменение события id = {}, добавленного текущим пользователем id = {}", eventId, userId);
 //        изменить можно только отмененные события или события в состоянии ожидания модерации (Ожидается код ошибки 409)
 //        дата и время на которые намечено событие не может быть раньше, чем через два часа от текущего момента (Ожидается код ошибки 409)
-        return  null;
+        return eventService.updateEventByIdByUser(userId, eventId, eventDto);
     }
 
     @GetMapping("/{userId}/events/{eventId}/requests")

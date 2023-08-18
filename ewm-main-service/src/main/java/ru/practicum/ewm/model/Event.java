@@ -27,8 +27,8 @@ public class Event {
     @ToString.Exclude
     private Category category;
 
-//    @Column(name = "confirmed_requests")
-//    private Long confirmedRequests;
+    @Column(name = "confirmed_requests")
+    private Long confirmedRequests;
 
     @Column(name = "created_on", nullable = false)
     private LocalDateTime createdOn;
@@ -68,6 +68,6 @@ public class Event {
     @Column(name = "title", nullable = false)
     private String title;
 
-//    @Column(name = "views")
-//    private Long views;
+    @Column(name = "views")
+    private Long views;
 }
