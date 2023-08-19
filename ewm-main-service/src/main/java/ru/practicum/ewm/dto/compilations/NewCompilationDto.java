@@ -7,7 +7,6 @@ import ru.practicum.ewm.validation.Create;
 import ru.practicum.ewm.validation.Update;
 
 import javax.validation.constraints.NotBlank;
-import java.util.ArrayList;
 import java.util.List;
 
 @Data

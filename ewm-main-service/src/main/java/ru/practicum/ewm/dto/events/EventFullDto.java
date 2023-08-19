@@ -10,7 +10,6 @@ import ru.practicum.ewm.dto.LocationDto;
 import ru.practicum.ewm.dto.users.UserShortDto;
 import ru.practicum.ewm.model.enums.EventState;
 
-import javax.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
 
 @Data

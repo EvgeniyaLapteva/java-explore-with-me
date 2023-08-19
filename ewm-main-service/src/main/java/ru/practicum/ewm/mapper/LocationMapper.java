@@ -7,6 +7,7 @@ public class LocationMapper {
 
     public static LocationDto toLocationDto(Location location) {
         return LocationDto.builder()
+                .id(location.getId())
                 .lon(location.getLon())
                 .lat(location.getLat())
                 .build();
@@ -14,8 +15,9 @@ public class LocationMapper {
 
     public static Location toLocation(LocationDto locationDto) {
         Location location = new Location();
+        location.setId(locationDto.getId());
         location.setLat(locationDto.getLat());
-        location.setLon(location.getLon());
+        location.setLon(locationDto.getLon());
         return location;
     }
 }

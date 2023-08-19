@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 import ru.practicum.ewm.dto.CategoryDto;
 import ru.practicum.ewm.dto.users.UserShortDto;
 
-import javax.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
 
 @Data
