@@ -87,6 +87,7 @@ public class ParticipationRequestServiceImpl implements ParticipationRequestServ
         log.info("Пользователь id = {} отменил заявку id = {}", userId, requestId);
         return ParticipationRequestMapper.toRequestDto(canceledRequest);
     }
+
     private User getUser(Long userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new ObjectNotFoundException("Пользователь" +
@@ -102,6 +103,7 @@ public class ParticipationRequestServiceImpl implements ParticipationRequestServ
         return eventRepository.findById(eventId)
                 .orElseThrow(() -> new ObjectNotFoundException("Событие с id=" + eventId + " не найдено"));
     }
+
     private void validateInitiatorOfEvent(Long userId, Long initiatorId) {
         if (initiatorId.equals(userId)) {
             throw new ConditionsAreNotMetException("Инициатор не может создать запрос на участие в собственном " +

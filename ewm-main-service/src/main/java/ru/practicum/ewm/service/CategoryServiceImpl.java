@@ -26,6 +26,7 @@ public class CategoryServiceImpl implements CategoryService {
     private final CategoryRepository repository;
 
     private final EventRepository eventRepository;
+
     @Override
     public CategoryDto createCategory(CategoryDto categoryDto) {
         Category category = CategoryMapper.toCategory(categoryDto);
