@@ -1,16 +1,15 @@
 package ru.practicum.ewm.dto.events;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.hibernate.validator.constraints.Length;
+import lombok.*;
 import ru.practicum.ewm.dto.LocationDto;
 import ru.practicum.ewm.model.enums.StateAction;
+import ru.practicum.ewm.validation.EventDateValidator;
 
-import javax.validation.constraints.Future;
+import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
+
+import static ru.practicum.ewm.ConstantsForDto.FOR_FORMATTER;
 
 @Data
 @Builder
@@ -18,16 +17,16 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class UpdateEventDto {
 
-    @Length(min = 20, max = 2000)
+    @Size(min = 20, max = 2000)
     private String annotation;
 
     private Long category;
 
-    @Length(min = 20, max = 7000)
+    @Size(min = 20, max = 7000)
     private String description;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @Future
+    @JsonFormat(pattern = FOR_FORMATTER)
+    @EventDateValidator
     private LocalDateTime eventDate;
 
     private LocationDto location;
@@ -40,6 +39,6 @@ public class UpdateEventDto {
 
     private StateAction stateAction;
 
-    @Length(min = 3, max = 120)
+    @Size(min = 3, max = 120)
     private String title;
 }

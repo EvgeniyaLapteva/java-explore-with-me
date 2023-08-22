@@ -6,6 +6,8 @@ import lombok.*;
 import javax.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
 
+import static ru.practicum.ewm.ConstantsForDto.FOR_FORMATTER;
+
 @Getter
 @Setter
 @Builder
@@ -23,6 +25,6 @@ public class HitForPostDto {
     @NotBlank
     String ip;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = FOR_FORMATTER)
     LocalDateTime timestamp;
 }

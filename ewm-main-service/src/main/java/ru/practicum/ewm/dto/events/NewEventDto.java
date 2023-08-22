@@ -7,11 +7,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
 import ru.practicum.ewm.dto.LocationDto;
+import ru.practicum.ewm.validation.EventDateValidator;
 
-import javax.validation.constraints.FutureOrPresent;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
+import static ru.practicum.ewm.ConstantsForDto.FOR_FORMATTER;
 
 @Data
 @Builder
@@ -31,16 +32,14 @@ public class NewEventDto {
     private String description;
 
     @NotNull
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    //не раньше, чем через два часа от текущего времени
-    @FutureOrPresent(message = "должно содержать дату, которая еще не наступила")
+    @JsonFormat(pattern = FOR_FORMATTER)
+    @EventDateValidator
     private LocalDateTime eventDate;
 
     @NotNull
     private LocationDto location;
 
-    @Builder.Default
-    private Boolean paid = false;
+    private Boolean paid;
 
     private Integer participantLimit;
 

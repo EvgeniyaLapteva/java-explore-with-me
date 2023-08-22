@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import ru.practicum.ewm.model.enums.RequestStatus;
 
 import java.time.LocalDateTime;
+import static ru.practicum.ewm.ConstantsForDto.FOR_FORMATTER;
 
 @Data
 @Builder
@@ -15,7 +16,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class ParticipationRequestDto {
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = FOR_FORMATTER)
     private LocalDateTime created;
 
     private Long event;

@@ -17,24 +17,18 @@ import ru.practicum.ewm.exception.response.ApiError;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+import static ru.practicum.ewm.ConstantsForDto.FOR_FORMATTER;
+
 @RestControllerAdvice
 @Slf4j
 public class ErrorHandler {
 
-    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ApiError handleObjectNotFoundException(final ObjectNotFoundException e) {
-        log.info(e.getMessage());
-        return new ApiError("NOT_FOUND", "The required object was not found.", e.getMessage(),
-                LocalDateTime.now().format(formatter));
-    }
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern(FOR_FORMATTER);
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ApiError handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
-        String errorMessage;
+    public ApiError handleMethodArgumentNotValidException(final MethodArgumentNotValidException e) {
+        String message;
         if (e.hasFieldErrors()) {
             StringBuilder builder = new StringBuilder();
             for (FieldError fieldError : e.getFieldErrors()) {
@@ -44,43 +38,53 @@ public class ErrorHandler {
                 builder.append(fieldError.getDefaultMessage());
                 builder.append(". Value: ");
                 builder.append(fieldError.getRejectedValue());
+                builder.append(". ");
             }
-            errorMessage = builder.toString();
+            message = builder.toString();
         } else {
-            errorMessage = e.getMessage();
+            message = e.getMessage();
         }
-        return new ApiError("BAD_REQUEST", "Incorrectly made request.", errorMessage,
+        log.error(message);
+        return new ApiError("BAD_REQUEST", "Incorrectly made request.", message,
                 LocalDateTime.now().format(formatter));
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.CONFLICT)
     public ApiError handleDataIntegrityViolationException(final DataIntegrityViolationException e) {
-        log.info(e.getMessage());
+        log.error(e.getMessage());
         return new ApiError("CONFLICT", "Integrity constraint has been violated.", e.getMessage(),
+                LocalDateTime.now().format(formatter));
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ApiError handleMethodArgumentTypeMismatchException(final MethodArgumentTypeMismatchException e) {
+        log.error(e.getMessage());
+        return new ApiError("BAD_REQUEST", "Incorrectly made request.", e.getMessage(),
+                LocalDateTime.now().format(formatter));
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ApiError handleObjectNotFoundException(final ObjectNotFoundException e) {
+        log.error(e.getMessage());
+        return new ApiError("NOT_FOUND", "The required object was not found.", e.getMessage(),
                 LocalDateTime.now().format(formatter));
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.CONFLICT)
     public ApiError handleConditionsAreNotMetException(final ConditionsAreNotMetException e) {
-        log.info(e.getMessage());
-        return new ApiError("CONFLICT", "For the requested operation the conditions are not met.",
+        log.error(e.getMessage());
+        return new ApiError("FORBIDDEN", "For the requested operation the conditions are not met.",
                 e.getMessage(), LocalDateTime.now().format(formatter));
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ApiError handleMethodArgumentTypeMismatchException(final MethodArgumentTypeMismatchException e) {
-        log.info(e.getMessage());
-        return new ApiError("BAD_REQUEST", "Incorrectly made request.", e.getMessage(),
-                LocalDateTime.now().format(formatter));
-    }
-
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ApiError handleIncorrectRequestException(final IncorrectRequestException e) {
-        log.info(e.getMessage());
+        log.error(e.getMessage());
         return new ApiError("BAD_REQUEST", "Incorrectly made request.", e.getMessage(),
                 LocalDateTime.now().format(formatter));
     }

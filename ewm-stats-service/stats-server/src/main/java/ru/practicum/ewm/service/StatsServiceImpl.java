@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.ewm.HitForPostDto;
 import ru.practicum.ewm.StatsForGetDto;
+import ru.practicum.ewm.exceptions.IncorrectlyMadeRequestException;
 import ru.practicum.ewm.mapper.HitMapper;
 import ru.practicum.ewm.model.Hit;
 import ru.practicum.ewm.repository.StatsRepository;
@@ -31,6 +32,9 @@ public class StatsServiceImpl implements StatsService {
     @Override
     @Transactional(readOnly = true)
     public List<StatsForGetDto> getStats(LocalDateTime start, LocalDateTime end, List<String> uris, boolean unique) {
+        if (end.isBefore(start)) {
+            throw new IncorrectlyMadeRequestException("Значение поля end не может быть раньше значения поля start");
+        }
         if (unique) {
             if (uris != null) {
                 log.info("Получили статистику по заданным uri и уникальным ip");

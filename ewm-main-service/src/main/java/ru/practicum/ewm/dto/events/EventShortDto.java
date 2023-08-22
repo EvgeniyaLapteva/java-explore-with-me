@@ -9,6 +9,7 @@ import ru.practicum.ewm.dto.CategoryDto;
 import ru.practicum.ewm.dto.users.UserShortDto;
 
 import java.time.LocalDateTime;
+import static ru.practicum.ewm.ConstantsForDto.FOR_FORMATTER;
 
 @Data
 @Builder
@@ -16,27 +17,21 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class EventShortDto {
 
-//    @NotBlank
     private String annotation;
 
-//    @NotBlank
     private CategoryDto category;
 
-    private Long confirmedRequests;
+    private Integer confirmedRequests;
 
-//    @NotBlank
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = FOR_FORMATTER)
     private LocalDateTime eventDate;
 
     private Long id;
 
-//    @NotBlank
     private UserShortDto initiator;
 
-//    @NotBlank
     private Boolean paid;
 
-//    @NotBlank
     private String title;
 
     private Long views;

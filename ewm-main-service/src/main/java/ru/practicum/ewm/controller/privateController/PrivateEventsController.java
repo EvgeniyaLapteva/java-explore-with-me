@@ -46,7 +46,7 @@ public class PrivateEventsController {
     public EventFullDto getEventByIdByUser(@PathVariable Long userId, @PathVariable Long eventId) {
         log.info("Запрос на получение полной информации о событии по id = {} добавленном текущим пользователем id = {}",
                 eventId, userId);
-        return eventService.getEventByIdByUser(userId, eventId);
+        return eventService.getEventByIdPublic(userId, eventId);
     }
 
     @PatchMapping("/{eventId}")
@@ -69,7 +69,8 @@ public class PrivateEventsController {
     @ResponseStatus(HttpStatus.OK)
     public EventRequestStatusUpdateResult updateRequestsStatusByUserId(@PathVariable Long userId,
                                                                        @PathVariable Long eventId,
-                                                                       @Valid @RequestBody EventRequestStatusUpdateRequest request) {
+                                                                       @Valid @RequestBody
+                                                                           EventRequestStatusUpdateRequest request) {
         log.info("Запрос на обновление статусов заявок на участии в событии id = {} пользователя id = {}", eventId,
                 userId);
         return eventService.updateRequestsStatusByUserId(userId, eventId, request);

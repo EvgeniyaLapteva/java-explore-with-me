@@ -1,18 +1,18 @@
 package ru.practicum.ewm.model;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "compilations")
 @Getter
 @Setter
 @ToString
+@AllArgsConstructor
+@NoArgsConstructor
 public class Compilation {
 
     @Id
@@ -21,14 +21,20 @@ public class Compilation {
 
     @ManyToMany
     @JoinTable(name = "events_compilations",
-    joinColumns = @JoinColumn(name = "compilation_id"),
-    inverseJoinColumns = @JoinColumn(name = "event_id"))
-    @ToString.Exclude
-    private List<Event> events = new ArrayList<>();
+            joinColumns = @JoinColumn(name = "compilation_id"),
+            inverseJoinColumns = @JoinColumn(name = "event_id"))
+    private Set<Event> events = new HashSet<>();
 
     @Column(name = "pinned")
     private Boolean pinned;
 
     @Column(name = "title", nullable = false)
     private String title;
+
+        @PrePersist
+    public void prePersist() {
+        if (pinned == null) {
+            pinned = false;
+        }
+    }
 }

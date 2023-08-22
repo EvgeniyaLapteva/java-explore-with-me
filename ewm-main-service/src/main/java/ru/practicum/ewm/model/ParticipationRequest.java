@@ -1,8 +1,6 @@
 package ru.practicum.ewm.model;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import ru.practicum.ewm.model.enums.RequestStatus;
 
 import javax.persistence.*;
@@ -13,6 +11,8 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @ToString
+@AllArgsConstructor
+@NoArgsConstructor
 public class ParticipationRequest {
 
     @Id
@@ -24,12 +24,10 @@ public class ParticipationRequest {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "event_id", nullable = false)
-    @ToString.Exclude
     private Event event;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "requester_id", nullable = false)
-    @ToString.Exclude
     private User requester;
 
     @Enumerated(EnumType.STRING)

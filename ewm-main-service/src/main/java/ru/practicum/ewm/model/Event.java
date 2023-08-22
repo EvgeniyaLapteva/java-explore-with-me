@@ -1,8 +1,6 @@
 package ru.practicum.ewm.model;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import ru.practicum.ewm.model.enums.EventState;
 
 import javax.persistence.*;
@@ -13,6 +11,8 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @ToString
+@AllArgsConstructor
+@NoArgsConstructor
 public class Event {
 
     @Id
@@ -24,11 +24,7 @@ public class Event {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
-    @ToString.Exclude
     private Category category;
-
-    @Column(name = "confirmed_requests")
-    private Long confirmedRequests;
 
     @Column(name = "created_on", nullable = false)
     private LocalDateTime createdOn;
@@ -41,7 +37,6 @@ public class Event {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "initiator_id", nullable = false)
-    @ToString.Exclude
     private User initiator;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
@@ -49,7 +44,7 @@ public class Event {
     @ToString.Exclude
     private Location location;
 
-    @Column(name = "paid", nullable = false)
+    @Column(name = "paid")
     private Boolean paid;
 
     @Column(name = "participant_limit")
@@ -68,6 +63,17 @@ public class Event {
     @Column(name = "title", nullable = false)
     private String title;
 
-    @Column(name = "views")
-    private Long views;
+    @PrePersist
+    public void prePersist() {
+        if (paid == null) {
+            paid = false;
+        }
+        if (participantLimit == null) {
+            participantLimit = 0;
+        }
+        if (requestModeration == null) {
+            requestModeration = true;
+        }
+    }
 }
+

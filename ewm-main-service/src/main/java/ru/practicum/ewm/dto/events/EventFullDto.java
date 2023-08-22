@@ -11,6 +11,7 @@ import ru.practicum.ewm.dto.users.UserShortDto;
 import ru.practicum.ewm.model.enums.EventState;
 
 import java.time.LocalDateTime;
+import static ru.practicum.ewm.ConstantsForDto.FOR_FORMATTER;
 
 @Data
 @Builder
@@ -18,44 +19,37 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class EventFullDto {
 
-//    @NotBlank
     private String annotation;
 
-//    @NotBlank
     private CategoryDto category;
 
-    private Long confirmedRequests;
+    private Integer confirmedRequests;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = FOR_FORMATTER)
     private LocalDateTime createdOn;
 
     private String description;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-//    @NotBlank
+    @JsonFormat(pattern = FOR_FORMATTER)
     private LocalDateTime eventDate;
 
     private Long id;
 
-//    @NotBlank
     private UserShortDto initiator;
 
-//    @NotBlank
     private LocationDto location;
 
-//    @NotBlank
     private Boolean paid;
 
     private Integer participantLimit;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = FOR_FORMATTER)
     private LocalDateTime publishedOn;
 
     private Boolean requestModeration;
 
     private EventState state;
 
-//    @NotBlank
     private String title;
 
     private Long views;

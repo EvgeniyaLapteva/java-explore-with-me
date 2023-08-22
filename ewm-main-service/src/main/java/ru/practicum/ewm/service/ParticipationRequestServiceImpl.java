@@ -19,7 +19,6 @@ import ru.practicum.ewm.repository.UserRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -30,68 +29,83 @@ public class ParticipationRequestServiceImpl implements ParticipationRequestServ
 
     private final ParticipationRequestRepository repository;
 
-    private final UserRepository userRepository;
-
     private final EventRepository eventRepository;
 
+    private final UserRepository userRepository;
+
+    @Transactional
     @Override
+    public ParticipationRequestDto createParticipationRequest(Long userId, Long eventId) {
+        ParticipationRequest request = new ParticipationRequest();
+        User requester = getUser(userId);
+        request.setRequester(requester);
+        Event event = getEvent(eventId);
+        request.setEvent(event);
+        validateInitiatorOfEvent(event.getInitiator().getId(), userId);
+        if (!event.getState().equals(EventState.PUBLISHED)) {
+            throw new ConditionsAreNotMetException("Для подачи заявок на участие статус события должен быть PUBLISHED");
+        }
+        Integer confirmedRequests = repository.countAllByEventIdAndStatus(eventId,
+                RequestStatus.CONFIRMED);
+        if (event.getParticipantLimit() <= confirmedRequests && event.getParticipantLimit() != 0) {
+            throw new ConditionsAreNotMetException(("Лимит запросов на участие превышен"));
+        }
+        if (!event.getRequestModeration() || event.getParticipantLimit() == 0) {
+            request.setStatus(RequestStatus.CONFIRMED);
+        } else {
+            request.setStatus(RequestStatus.PENDING);
+        }
+        request.setCreated(LocalDateTime.now());
+        ParticipationRequest savedRequest = repository.save(request);
+        log.info("Создали запрос пользователя id = {} на участие в событии id = {}", userId, eventId);
+        return ParticipationRequestMapper.toRequestDto(savedRequest);
+    }
+
     @Transactional(readOnly = true)
+    @Override
     public List<ParticipationRequestDto> getRequestsByUserId(Long userId) {
         getUser(userId);
         List<ParticipationRequest> requests = repository.findByRequesterId(userId);
         log.info("Получили список заявок на участие пользователя id = {} в чужих событиях", userId);
-        return requests.stream()
+        return requests
+                .stream()
                 .map(ParticipationRequestMapper::toRequestDto)
                 .collect(Collectors.toList());
     }
 
-    @Override
-    public ParticipationRequestDto createParticipationRequest(Long userId, Long eventId) {
-        User user = getUser(userId);
-        Event event = eventRepository.findById(eventId)
-                .orElseThrow(() -> new ObjectNotFoundException("Event with id=" + eventId + " was not found"));
-        if (Objects.equals(userId, event.getInitiator().getId())) {
-            throw new ConditionsAreNotMetException("Initiator of event has id = " + event.getInitiator().getId() +
-                    " and user id is " + userId);
-        }
-        if (event.getParticipantLimit() <= event.getConfirmedRequests() && event.getParticipantLimit() != 0) {
-            throw new ConditionsAreNotMetException("Exceeded the limit of participants");
-        }
-        if (event.getState() != EventState.PUBLISHED) {
-            throw new ConditionsAreNotMetException("The event id = " + eventId + " has not published yet");
-        }
-
-        ParticipationRequest request = new ParticipationRequest();
-        request.setRequester(user);
-        request.setEvent(event);
-        request.setCreated(LocalDateTime.now());
-        request.setStatus(RequestStatus.PENDING);
-        if (!event.getRequestModeration() || event.getParticipantLimit() == 0) {
-            request.setStatus(RequestStatus.CONFIRMED);
-            request = repository.save(request);
-            event.setConfirmedRequests(event.getConfirmedRequests() + 1L);
-            log.info("Создали и подтвердили запрос пользователя id = {} на участие в событии id = {}", userId, eventId);
-            return ParticipationRequestMapper.toRequestDto(request);
-        }
-        request = repository.save(request);
-        log.info("Создали запрос пользователя id = {} на участие в событии id = {}", userId, eventId);
-        return ParticipationRequestMapper.toRequestDto(request);
-    }
-
+    @Transactional
     @Override
     public ParticipationRequestDto cancelParticipationRequestStatus(Long userId, Long requestId) {
         getUser(userId);
-        ParticipationRequest request = repository.findById(requestId)
-                .orElseThrow(() -> new ObjectNotFoundException("Request with id = " + requestId + " was not found"));
+        ParticipationRequest request = getRequest(requestId);
+        if (!request.getRequester().getId().equals(userId)) {
+            throw new ObjectNotFoundException("Пользователь с id = " + userId + "не подавал заявку на участие с " +
+                    "номером " + requestId);
+        }
         request.setStatus(RequestStatus.CANCELED);
         ParticipationRequest canceledRequest = repository.save(request);
         log.info("Пользователь id = {} отменил заявку id = {}", userId, requestId);
         return ParticipationRequestMapper.toRequestDto(canceledRequest);
     }
-
     private User getUser(Long userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new ObjectNotFoundException("Пользователь" +
                         "с id = " + userId + " не найден"));
+    }
+
+    private ParticipationRequest getRequest(Long requestId) {
+        return repository.findById(requestId)
+                .orElseThrow(() -> new ObjectNotFoundException("Request with id = " + requestId + " was not found"));
+    }
+
+    private Event getEvent(Long eventId) {
+        return eventRepository.findById(eventId)
+                .orElseThrow(() -> new ObjectNotFoundException("Событие с id=" + eventId + " не найдено"));
+    }
+    private void validateInitiatorOfEvent(Long userId, Long initiatorId) {
+        if (initiatorId.equals(userId)) {
+            throw new ConditionsAreNotMetException("Инициатор не может создать запрос на участие в собственном " +
+                    "событии");
+        }
     }
 }

@@ -11,14 +11,10 @@ import java.util.stream.Collectors;
 
 public class CompilationMapper {
 
-    public static Compilation toCompilation(NewCompilationDto compilationDto) {
+    public static Compilation toCompilation(NewCompilationDto newCompilationDto) {
         Compilation compilation = new Compilation();
-        compilation.setTitle(compilationDto.getTitle());
-        if (compilationDto.getPinned() == null) {
-            compilation.setPinned(false);
-        } else {
-            compilation.setPinned(compilationDto.getPinned());
-        }
+        compilation.setPinned(newCompilationDto.getPinned());
+        compilation.setTitle(newCompilationDto.getTitle());
         return compilation;
     }
 

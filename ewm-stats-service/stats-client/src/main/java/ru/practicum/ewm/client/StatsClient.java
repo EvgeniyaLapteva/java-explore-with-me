@@ -1,5 +1,6 @@
 package ru.practicum.ewm.client;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.ResponseEntity;
@@ -13,10 +14,15 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 
+import static ru.practicum.ewm.ConstantsForDto.FOR_FORMATTER;
+
 @Service
 public class StatsClient extends BaseClient {
 
-    public StatsClient(@Value("${STATS_SERVER_URL}") String serverUrl, RestTemplateBuilder builder) {
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern(FOR_FORMATTER);
+
+    @Autowired
+    public StatsClient(@Value("${stats-server.url}") String serverUrl, RestTemplateBuilder builder) {
         super(builder
                 .uriTemplateHandler(new DefaultUriBuilderFactory(serverUrl))
                 .requestFactory(HttpComponentsClientHttpRequestFactory::new)
@@ -29,8 +35,8 @@ public class StatsClient extends BaseClient {
 
     public ResponseEntity<Object> getStats(LocalDateTime start, LocalDateTime end, List<String> uris, boolean unique) {
         Map<String, Object> parameters = Map.of(
-                "start", start.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")),
-                "end", end.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")),
+                "start", start.format(formatter),
+                "end", end.format(formatter),
                 "uris", String.join(",", uris),
                 "unique", unique
         );
