@@ -294,6 +294,7 @@ public class EventServiceImpl implements EventService {
         });
         return eventsDto;
     }
+
     private List<EventShortDto> getEventShortDtos(List<Event> events, EventSort sort) {
         List<EventShortDto> eventsDto = events
                 .stream()
@@ -317,6 +318,7 @@ public class EventServiceImpl implements EventService {
         }
         return eventsDto;
     }
+
     private Map<Long, Integer> getConfirmedRequests(List<Long> eventsId) {
         List<ParticipationRequest> confirmedRequests = requestRepository.findAllByStatusAndEventIdIn(
                 RequestStatus.CONFIRMED, eventsId);
@@ -326,6 +328,7 @@ public class EventServiceImpl implements EventService {
                 .stream()
                 .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().size()));
     }
+
     private EventFullDto getEventFullDto(Long eventId, Event event) {
         EventFullDto eventDto = EventMapper.toEventFullDto(event);
         Integer confirmedRequests = requestRepository.countAllByEventIdAndStatus(eventId,
@@ -335,11 +338,13 @@ public class EventServiceImpl implements EventService {
         eventDto.setViews(views.getOrDefault(eventDto.getId(), 0L));
         return eventDto;
     }
+
     private void validateInitiator(Long userId, Long initiatorId) {
         if (!initiatorId.equals(userId)) {
             throw new ConditionsAreNotMetException("Пользователь id = " + userId + "не является инициатором события");
         }
     }
+
     private void sendStats(String uri, String ip) {
         HitForPostDto hit = HitForPostDto.builder()
                 .app("ewm-main-service")
