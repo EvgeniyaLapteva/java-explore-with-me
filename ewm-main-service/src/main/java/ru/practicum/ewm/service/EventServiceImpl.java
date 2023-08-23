@@ -1,11 +1,8 @@
 package ru.practicum.ewm.service;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.ewm.HitForPostDto;
@@ -48,7 +45,6 @@ public class EventServiceImpl implements EventService {
     public static final LocalDateTime START = LocalDateTime.of(2000, 1, 1, 0, 0);
 
     private final LocalDateTime now = LocalDateTime.now();
-    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Transactional(readOnly = true)
     @Override
@@ -361,11 +357,8 @@ public class EventServiceImpl implements EventService {
             String uri = "/events/" + eventId;
             uris.add(uri);
         }
-        ResponseEntity<Object> response = client.getStats(START, LocalDateTime.now(), uris, true);
+        List<StatsForGetDto> result = client.getStats(START, LocalDateTime.now(), uris, true);
         log.info("Отправлен запрос на получение статистики просмиотров");
-        Object responseBody = response.getBody();
-        List<StatsForGetDto> result = objectMapper.convertValue(responseBody, new TypeReference<List<StatsForGetDto>>() {
-        });
         Map<Long, Long> views = new HashMap<>();
         for (StatsForGetDto dto : result) {
             String uri = dto.getUri();
