@@ -290,16 +290,14 @@ public class EventServiceImpl implements EventService {
         for (EventFullDto dto : eventsDto) {
             eventsId.add(dto.getId());
         }
+        Map<Long, Integer> requests = getConfirmedRequests(eventsId);
         Map<Long, Long> views = getViews(eventsId);
-        for (EventFullDto dto : eventsDto) {
-            Integer confirmedRequests = requestRepository.countAllByEventIdAndStatus(dto.getId(),
-                    RequestStatus.CONFIRMED);
-            dto.setConfirmedRequests(confirmedRequests);
-            dto.setViews(views.getOrDefault(dto.getId(), 0L));
-        }
+        eventsDto.forEach(eventFullDto -> {
+            eventFullDto.setConfirmedRequests(requests.getOrDefault(eventFullDto.getId(), 0));
+            eventFullDto.setViews(views.getOrDefault(eventFullDto.getId(), 0L));
+        });
         return eventsDto;
     }
-
     private List<EventShortDto> getEventShortDtos(List<Event> events, EventSort sort) {
         List<EventShortDto> eventsDto = events
                 .stream()
@@ -310,12 +308,11 @@ public class EventServiceImpl implements EventService {
             eventsId.add(dto.getId());
         }
         Map<Long, Long> views = getViews(eventsId);
-        for (EventShortDto dto : eventsDto) {
-            Integer confirmedRequests = requestRepository.countAllByEventIdAndStatus(dto.getId(),
-                    RequestStatus.CONFIRMED);
-            dto.setConfirmedRequests(confirmedRequests);
-            dto.setViews(views.getOrDefault(dto.getId(), 0L));
-        }
+        Map<Long, Integer> requests = getConfirmedRequests(eventsId);
+        eventsDto.forEach(eventShortDto -> {
+            eventShortDto.setConfirmedRequests(requests.getOrDefault(eventShortDto.getId(), 0));
+            eventShortDto.setViews(views.getOrDefault(eventShortDto.getId(), 0L));
+        });
         if (sort != null && sort.equals(EventSort.EVENT_DATE)) {
             eventsDto.sort(Comparator.comparing(EventShortDto::getEventDate));
         }
@@ -324,7 +321,15 @@ public class EventServiceImpl implements EventService {
         }
         return eventsDto;
     }
-
+    private Map<Long, Integer> getConfirmedRequests(List<Long> eventsId) {
+        List<ParticipationRequest> confirmedRequests = requestRepository.findAllByStatusAndEventIdIn(
+                RequestStatus.CONFIRMED, eventsId);
+        return confirmedRequests.stream()
+                .collect(Collectors.groupingBy(request -> request.getEvent().getId()))
+                .entrySet()
+                .stream()
+                .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().size()));
+    }
     private EventFullDto getEventFullDto(Long eventId, Event event) {
         EventFullDto eventDto = EventMapper.toEventFullDto(event);
         Integer confirmedRequests = requestRepository.countAllByEventIdAndStatus(eventId,
@@ -334,13 +339,11 @@ public class EventServiceImpl implements EventService {
         eventDto.setViews(views.getOrDefault(eventDto.getId(), 0L));
         return eventDto;
     }
-
     private void validateInitiator(Long userId, Long initiatorId) {
         if (!initiatorId.equals(userId)) {
             throw new ConditionsAreNotMetException("Пользователь id = " + userId + "не является инициатором события");
         }
     }
-
     private void sendStats(String uri, String ip) {
         HitForPostDto hit = HitForPostDto.builder()
                 .app("ewm-main-service")
@@ -363,7 +366,6 @@ public class EventServiceImpl implements EventService {
         Object responseBody = response.getBody();
         List<StatsForGetDto> result = objectMapper.convertValue(responseBody, new TypeReference<List<StatsForGetDto>>() {
         });
-
         Map<Long, Long> views = new HashMap<>();
         for (StatsForGetDto dto : result) {
             String uri = dto.getUri();

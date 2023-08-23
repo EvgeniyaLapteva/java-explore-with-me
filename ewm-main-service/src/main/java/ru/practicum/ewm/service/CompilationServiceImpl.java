@@ -12,12 +12,15 @@ import ru.practicum.ewm.exception.model.ObjectNotFoundException;
 import ru.practicum.ewm.mapper.CompilationMapper;
 import ru.practicum.ewm.model.Compilation;
 import ru.practicum.ewm.model.Event;
+import ru.practicum.ewm.model.ParticipationRequest;
 import ru.practicum.ewm.model.enums.RequestStatus;
 import ru.practicum.ewm.repository.CompilationRepository;
 import ru.practicum.ewm.repository.EventRepository;
 import ru.practicum.ewm.repository.ParticipationRequestRepository;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -89,14 +92,7 @@ public class CompilationServiceImpl implements CompilationService {
                 .map(CompilationMapper::toCompilationDto)
                 .collect(Collectors.toList());
         for (CompilationDto dto : compilationsDto) {
-            List<EventShortDto> compilationEvents = dto.getEvents();
-            if (compilationEvents != null) {
-                for (EventShortDto event : compilationEvents) {
-                    Integer confirmedRequests = requestRepository.countAllByEventIdAndStatus(event.getId(),
-                            RequestStatus.CONFIRMED);
-                    event.setConfirmedRequests(confirmedRequests);
-                }
-            }
+            setConfirmedRequestsToEvent(dto);
         }
         log.info("Получили список подборок событий");
         return compilationsDto;
@@ -118,14 +114,27 @@ public class CompilationServiceImpl implements CompilationService {
 
     private CompilationDto getCompilationDtoFull(Compilation compilation) {
         CompilationDto dto = CompilationMapper.toCompilationDto(compilation);
+        setConfirmedRequestsToEvent(dto);
+        return dto;
+    }
+
+    private void setConfirmedRequestsToEvent(CompilationDto dto) {
         List<EventShortDto> compilationEvents = dto.getEvents();
         if (compilationEvents != null) {
+            List<Long> eventIds = new ArrayList<>();
             for (EventShortDto event : compilationEvents) {
-                Integer confirmedRequests = requestRepository.countAllByEventIdAndStatus(event.getId(),
-                        RequestStatus.CONFIRMED);
-                event.setConfirmedRequests(confirmedRequests);
+                eventIds.add(event.getId());
             }
+            List<ParticipationRequest> confirmedRequests = requestRepository.findAllByStatusAndEventIdIn(
+                    RequestStatus.CONFIRMED, eventIds);
+            Map<Long, Integer> requests = confirmedRequests.stream()
+                    .collect(Collectors.groupingBy(request -> request.getEvent().getId()))
+                    .entrySet()
+                    .stream()
+                    .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().size()));
+            compilationEvents.forEach(eventShortDto -> {
+                eventShortDto.setConfirmedRequests(requests.getOrDefault(eventShortDto.getId(), 0));
+            });
         }
-        return dto;
     }
 }
