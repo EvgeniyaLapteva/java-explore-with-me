@@ -3,7 +3,8 @@ package ru.practicum.ewm;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-@SpringBootApplication public class MainStats {
+@SpringBootApplication
+public class MainStats {
 
     public static void main(String[] args) {
         SpringApplication.run(MainStats.class, args);
