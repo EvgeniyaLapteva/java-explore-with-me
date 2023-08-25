@@ -21,5 +21,5 @@ public interface CommentService {
 
     List<CommentDto> getAllCommentsOfEventByPublic(Long eventId, Integer from, Integer size);
 
-    public CommentDto getCommentByIdPublic(Long commentId);
+    CommentDto getCommentByIdPublic(Long commentId);
 }

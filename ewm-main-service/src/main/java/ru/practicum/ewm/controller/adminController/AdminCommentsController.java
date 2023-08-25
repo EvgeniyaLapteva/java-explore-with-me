@@ -10,7 +10,6 @@ import ru.practicum.ewm.service.CommentService;
 
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
