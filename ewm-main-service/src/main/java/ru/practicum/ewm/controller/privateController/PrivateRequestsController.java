@@ -18,7 +18,6 @@ public class PrivateRequestsController {
     private final ParticipationRequestService requestService;
 
     @GetMapping
-    @ResponseStatus(HttpStatus.OK)
     public List<ParticipationRequestDto> getRequestsByUserId(@PathVariable Long userId) {
         log.info("Запрос на получение списка заявок на участие пользователя id = {} в чужих событиях", userId);
         return requestService.getRequestsByUserId(userId);
@@ -33,7 +32,6 @@ public class PrivateRequestsController {
     }
 
     @PatchMapping("/{requestId}/cancel")
-    @ResponseStatus(HttpStatus.OK)
     public ParticipationRequestDto cancelParticipationRequestStatus(@PathVariable Long userId,
                                                                     @PathVariable Long requestId) {
         log.info("Запрос от пользователя id = {} на отмену участия в событии", userId);

@@ -18,7 +18,6 @@ import ru.practicum.ewm.repository.CommentRepository;
 import ru.practicum.ewm.repository.EventRepository;
 import ru.practicum.ewm.repository.UserRepository;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -41,11 +40,7 @@ public class CommentServiceImpl implements CommentService {
         if (!event.getState().equals(EventState.PUBLISHED)) {
             throw new ConditionsAreNotMetException("Комментарий можно добавить только к опубликованному событию");
         }
-        Comment comment = new Comment();
-        comment.setText(newCommentDto.getText());
-        comment.setAuthor(user);
-        comment.setEvent(event);
-        comment.setPublishedOn(LocalDateTime.now());
+        Comment comment = CommentMapper.toComment(newCommentDto, user, event);
         Comment savedComment = repository.save(comment);
         log.info("Создан комментарий id = {}", savedComment.getId());
         return CommentMapper.toCommentDto(savedComment);

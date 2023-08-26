@@ -22,7 +22,6 @@ public class AdminCommentsController {
     private final CommentService service;
 
     @GetMapping
-    @ResponseStatus(HttpStatus.OK)
     public List<CommentDto> getAllCommentsByAdmin(@RequestParam(required = false) Long eventId,
                                                   @RequestParam(defaultValue = "0") @PositiveOrZero Integer from,
                                                   @RequestParam(defaultValue = "10") @Positive Integer size) {

@@ -32,7 +32,6 @@ public class PrivateCommentsController {
     }
 
     @PatchMapping("/{commentId}")
-    @ResponseStatus(HttpStatus.OK)
     public CommentDto updateCommentById(@PathVariable Long userId, @PathVariable Long commentId,
                                         @Valid @RequestBody NewCommentDto newCommentDto) {
         log.info("Запрос на обновление комментария id = {} от пользователя id = {}", commentId, userId);
@@ -40,7 +39,6 @@ public class PrivateCommentsController {
     }
 
     @GetMapping
-    @ResponseStatus(HttpStatus.OK)
     public List<CommentDto> getCommentsByAuthor(@PathVariable Long userId,
                                                 @RequestParam(required = false) Long eventId,
                                                 @RequestParam(defaultValue = "0") @PositiveOrZero Integer from,
