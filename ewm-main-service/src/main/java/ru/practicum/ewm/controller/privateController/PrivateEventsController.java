@@ -3,6 +3,7 @@ package ru.practicum.ewm.controller.privateController;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.ewm.dto.events.EventFullDto;
 import ru.practicum.ewm.dto.events.NewEventDto;
@@ -21,12 +22,12 @@ import java.util.List;
 @RequiredArgsConstructor
 @Slf4j
 @RequestMapping("/users/{userId}/events")
+@Validated
 public class PrivateEventsController {
 
     private final EventService eventService;
 
     @GetMapping
-    @ResponseStatus(HttpStatus.OK)
     public List<EventFullDto> getEventsByUserId(@PathVariable Long userId,
                                                 @RequestParam(defaultValue = "0") @PositiveOrZero Integer from,
                                                 @RequestParam(defaultValue = "10") @Positive Integer size) {
@@ -42,7 +43,6 @@ public class PrivateEventsController {
     }
 
     @GetMapping("/{eventId}")
-    @ResponseStatus(HttpStatus.OK)
     public EventFullDto getEventByIdByUser(@PathVariable Long userId, @PathVariable Long eventId) {
         log.info("Запрос на получение полной информации о событии по id = {} добавленном текущим пользователем id = {}",
                 eventId, userId);
@@ -50,7 +50,6 @@ public class PrivateEventsController {
     }
 
     @PatchMapping("/{eventId}")
-    @ResponseStatus(HttpStatus.OK)
     public EventFullDto updateEventByIdByUser(@PathVariable Long userId, @PathVariable Long eventId,
                                               @Valid @RequestBody UpdateEventDto eventDto) {
         log.info("Запрос на изменение события id = {}, добавленного текущим пользователем id = {}", eventId, userId);
@@ -58,7 +57,6 @@ public class PrivateEventsController {
     }
 
     @GetMapping("/{eventId}/requests")
-    @ResponseStatus(HttpStatus.OK)
     public List<ParticipationRequestDto> getRequestsByUserIdAndEventId(@PathVariable Long userId,
                                                                        @PathVariable Long eventId) {
         log.info("Запрос на получение списка заявок на участие в событии id = {} пользователя id = {}", eventId, userId);
@@ -66,7 +64,6 @@ public class PrivateEventsController {
     }
 
     @PatchMapping("/{eventId}/requests")
-    @ResponseStatus(HttpStatus.OK)
     public EventRequestStatusUpdateResult updateRequestsStatusByUserId(@PathVariable Long userId,
                                                                        @PathVariable Long eventId,
                                                                        @Valid @RequestBody

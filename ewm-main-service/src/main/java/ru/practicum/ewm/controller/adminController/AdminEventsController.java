@@ -3,7 +3,7 @@ package ru.practicum.ewm.controller.adminController;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.ewm.dto.events.EventFullDto;
 import ru.practicum.ewm.dto.events.UpdateEventDto;
@@ -22,12 +22,12 @@ import static ru.practicum.ewm.ConstantsForDto.FOR_FORMATTER;
 @RequiredArgsConstructor
 @Slf4j
 @RequestMapping("/admin/events")
+@Validated
 public class AdminEventsController {
 
     private final EventService eventService;
 
     @GetMapping
-    @ResponseStatus(HttpStatus.OK)
     public List<EventFullDto> getAllEventsByAdmin(@RequestParam(required = false) List<Long> users,
                                                   @RequestParam(required = false) List<EventState> states,
                                                   @RequestParam(required = false) List<Long> categories,
@@ -42,7 +42,6 @@ public class AdminEventsController {
     }
 
     @PatchMapping("/{eventId}")
-    @ResponseStatus(HttpStatus.OK)
     public EventFullDto updateEventByAdmin(@PathVariable Long eventId,
                                            @Valid @RequestBody UpdateEventDto eventDto) {
         log.info("Запрос от администратора на обновление события по id = {}", eventId);

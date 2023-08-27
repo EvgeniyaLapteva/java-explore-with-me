@@ -2,7 +2,7 @@ package ru.practicum.ewm.controller.publicController;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.ewm.dto.CategoryDto;
 import ru.practicum.ewm.service.CategoryService;
@@ -15,12 +15,12 @@ import java.util.List;
 @RequiredArgsConstructor
 @Slf4j
 @RequestMapping("/categories")
+@Validated
 public class PublicCategoryController {
 
     private final CategoryService categoryService;
 
     @GetMapping
-    @ResponseStatus(HttpStatus.OK)
     public List<CategoryDto> getCategories(@RequestParam(defaultValue = "0") @PositiveOrZero Integer from,
                                            @RequestParam(defaultValue = "10") @Positive Integer size) {
         log.info("Запрос на получение списка категорий");
@@ -28,7 +28,6 @@ public class PublicCategoryController {
     }
 
     @GetMapping("/{catId}")
-    @ResponseStatus(HttpStatus.OK)
     public CategoryDto getCategoryById(@PathVariable Long catId) {
         log.info("Запрос на получение категории по id = {}", catId);
         return categoryService.getCategoryById(catId);
